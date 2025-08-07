@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cp:*)",
+      "Bash(npm install)",
+      "Bash(npm run dev:*)",
+      "Bash(copy emailSettings.env .env)",
+      "Bash(curl:*)",
+      "Bash(npm start)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": []
+  }
+}
