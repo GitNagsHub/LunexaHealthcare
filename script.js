@@ -214,6 +214,112 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initial animation check
     animateOnScroll();
+
+    // Products page functionality
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const productCards = document.querySelectorAll('.product-card');
+
+    // Product filtering
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Remove active from all buttons
+            filterBtns.forEach(b => b.classList.remove('active'));
+            // Add active to clicked button
+            this.classList.add('active');
+
+            const category = this.getAttribute('data-category');
+            
+            // Filter products
+            productCards.forEach(card => {
+                if (category === 'all' || card.getAttribute('data-category') === category) {
+                    card.style.display = 'block';
+                    // Add animation
+                    card.style.opacity = '0';
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 100);
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    // Image upload functionality
+    const uploadArea = document.getElementById('uploadArea');
+    const imageUpload = document.getElementById('imageUpload');
+    const uploadedImages = document.getElementById('uploadedImages');
+    const uploadLink = document.querySelector('.upload-link');
+
+    if (uploadArea && imageUpload) {
+        // Click to browse files
+        uploadArea.addEventListener('click', () => imageUpload.click());
+        uploadLink.addEventListener('click', (e) => {
+            e.stopPropagation();
+            imageUpload.click();
+        });
+
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            if (!uploadArea.contains(e.relatedTarget)) {
+                uploadArea.classList.remove('dragover');
+            }
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = Array.from(e.dataTransfer.files);
+            handleFiles(files);
+        });
+
+        // File input change
+        imageUpload.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            handleFiles(files);
+        });
+
+        // Handle uploaded files
+        function handleFiles(files) {
+            files.forEach(file => {
+                if (file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        createImagePreview(e.target.result, file.name);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    showMessage('Please select image files under 5MB only.', 'error');
+                }
+            });
+        }
+
+        // Create image preview
+        function createImagePreview(src, name) {
+            const imageContainer = document.createElement('div');
+            imageContainer.className = 'uploaded-image';
+            
+            imageContainer.innerHTML = `
+                <img src="${src}" alt="${name}" title="${name}">
+                <button class="remove-image" onclick="this.parentElement.remove()">×</button>
+            `;
+            
+            uploadedImages.appendChild(imageContainer);
+            
+            // Add animation
+            setTimeout(() => {
+                imageContainer.style.opacity = '1';
+                imageContainer.style.transform = 'scale(1)';
+            }, 100);
+        }
+    }
 });
 
 // Additional CSS for messages (add to your CSS)
